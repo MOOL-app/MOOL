@@ -1,12 +1,10 @@
 package com.mool.app.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
@@ -15,7 +13,7 @@ import java.time.LocalDate;
 @Entity
 public class User extends BaseTimeEntity{
 
-    @GeneratedValue @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) @Id
     @Column(name = "user_id")
     private Long id;
 
@@ -37,6 +35,16 @@ public class User extends BaseTimeEntity{
 
     private Long score;
 
+    private String role;
+
+    public boolean checkPassword(PasswordEncoder passwordEncoder, String inputPassword) {
+        return passwordEncoder.matches(inputPassword, this.password);
+    }
+
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
+    }
+
     @Builder
     public User(String email, String name, String nickname, String password,
                      String phoneNum, String address, LocalDate birthDate) {
@@ -49,6 +57,7 @@ public class User extends BaseTimeEntity{
         this.address = address;
         this.useYn = 0;
         this.score = 0L;
+        this.role = "USER";
 
     }
 }
